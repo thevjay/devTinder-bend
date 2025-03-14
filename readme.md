@@ -14,3 +14,12 @@
 - Write a dummy auth middleware for admin
 - Write a dummy auth middleware for all user routes,  except /user/login
 - Error Handlng and wild card error handling
+
+
+
+- Create a free cluster
+- Install mongoose library
+- connect Your application o the database URL\
+- 
+
+- Create a UserSchema & user Model

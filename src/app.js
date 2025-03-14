@@ -1,28 +1,38 @@
 const express = require('express')
-
+const connectDB = require('./config/database');
 const app = express();
+require('dotenv').config();
+const User = require('./models/user')
 
-app.get("/user",(req,res)=>{
+
+app.post("/signup",async(req,res)=>{
+       
+    // Creating a new instance of the User model
+
+    const user = new User({
+        firstName : "MSD",
+        lastName : "CSK",
+        emailId : "msd@gmail.com",
+        password : "123456",
+    });
+
     try{
-        // Logic of DB call and get user data
-        throw new Error("jhvvhvg");
-        res.send("All Data is Sent");
+        await user.save();
+        res.send("User Added Successfully!")
     }
-    catch(err){
-        res.status(500).send("Some error occurs")
+    catch(error){
+        console.error(error);
     }
-
 })
 
-app.use('/',(err,req,res,next)=>{
-    if(err){
-        // Log your error message
-        res.status(500).send("Something went wrong");
-    }
-});
-
-app.listen(7777,()=>{
-    console.log("Server is successfully listening on port 7777...")
-});
+connectDB().then(()=>{
+    console.log("Database connection established...");
+    app.listen(7777,()=>{
+        console.log("Server is successfully listening on port 7777...")
+    });    
+})
+.catch((err)=>{
+    console.error("Database cannot be connected"+err)
+})
 
 
