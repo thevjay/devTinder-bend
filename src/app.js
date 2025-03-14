@@ -2,27 +2,19 @@ const express = require('express')
 
 const app = express();
 
-app.get("/user",(req,res)=>{
+// ab?c --> /ac, /abc
+// a(bc)?d  -->  /ad  /abcd
+//Regx /a/ ->> /a^ 
+// /.*fly/ --> butterfly
+
+// Daynamic Routing
+
+app.get("/user/:userId/:name/:password",(req,res)=>{
+    console.log(req.params)
+    //console.log(req.query)
     res.send({firstName: "Vijya",lastName:"Saini"})
 })
 
-app.post("/user",async(req,res)=>{
-    console.log(req.body)
-    // saving data to DB
-    res.send("Data successfullly saved to the database")
-});
-
-app.delete("/user",(req,res)=>{
-    res.send("Deleted Successfully")
-})
-
-app.use('/hello',(req,res)=>{
-    res.send("Hello from the Dashboard!.")
-})
-
-app.use('/test',(req,res)=>{
-    res.send("Hello from the server!.")
-})
 
 app.listen(7777,()=>{
     console.log("Server is successfully listening on port 7777...")
