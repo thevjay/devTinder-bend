@@ -17,9 +17,13 @@
 
 
 
+
 - Create a free cluster
 - Install mongoose library
 - connect Your application o the database URL\
 - 
 
 - Create a UserSchema & user Model
+
+- bcrypt 
+- Vijayyy@323 , salt is random things rounds

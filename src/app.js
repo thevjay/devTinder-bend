@@ -3,21 +3,68 @@ const connectDB = require('./config/database');
 const app = express();
 require('dotenv').config();
 const User = require('./models/user')
-
+const {validateSignUpData} = require('./utils/validation')
+const bcrypt = require('bcrypt')
+ 
 app.use(express.json());
 
 app.post("/signup",async(req,res)=>{
        
-    // Creating a new instance of the User model
-
-    const user = new User(req.body);
-
     try{
+        // Validation of data
+        validateSignUpData(req);
+
+        const { firstName,lastName,emailId,password } = req.body;
+
+        const userDB = await User.findOne({emailId:emailId});
+        if(userDB){
+            throw new Error("Invalid creadentials")
+        }
+        
+
+        // Encrypt the password
+        const passwordHash = await bcrypt.hash(password,10)
+
+        // Creating a new instance of the User model
+        const user = new User({
+            firstName,
+            lastName,
+            emailId,
+            password:passwordHash,
+        });
+
         await user.save();
-        res.send("User Added Successfully!")
+
+        res.status(201).json({ message: "User Added Successfully!" });
     }
     catch(error){
-        console.error(error);
+        // Send a meaningful error response
+        res.status(400).json({ error: error.message || "Something went wrong!" });
+    }
+})
+
+app.post("/login",async(req,res)=>{
+    try{
+
+        const { emailId, password } = req.body;
+
+        const user = await User.findOne({emailId:emailId});
+        if(!user){
+            throw new Error("Invalid creadentials")
+        }
+        
+        const isPasswordValid = await bcrypt.compare(password,user.password)
+
+        if(isPasswordValid){
+            res.send('Login Successfully')
+        }
+        else{
+            throw new Error("Invalid creadentials");
+        }
+    }
+    catch(error){
+        // Send a meaningful error response
+        res.status(400).json({ error: error.message || "Something went wrong!" });
     }
 })
 
