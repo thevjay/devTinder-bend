@@ -1,16 +1,36 @@
 // Handle Auth Middleware for only Get requests GET, POST....requests
-const adminAuth = ("/admin",(req,res,next)=>{
+const jwt = require('jsonwebtoken');
+const User = require('../models/user');
 
-    console.log("Admin auth is getting checked!!");
-    const token = "xyz";
-    const isAdminAuthorized = token === 'xyz';
-    if(isAdminAuthorized){
+const userAuth = async(req,res,next)=>{
+    // Read the token from the req cookies
 
+    try{
+        const { token } = req.cookies;
+        if(!token){
+            throw new Error("Token is not Valid!!!!!!!!")
+        }
+
+        const decodeObj = await jwt.verify(token,"fsd");
+    
+        const { _id } = decodeObj;
+    
+        const user = await User.findById(_id);
+    
+        if(!user){
+            throw new Error("User not found")
+        }
+
+        req.user = user;
         next();
-    }else{
-        res.status(500).send("Unathurized Request")
+    
+        // validate the token
+        // Find the user
+    
+    }catch(error){
+        // Send a meaningful error response
+        res.status(400).json({ error: error.message || "Something went wrong!" });
     }
-})
+   }
 
-
-module.exports = {adminAuth};
+module.exports = {userAuth};
