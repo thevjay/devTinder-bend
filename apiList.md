@@ -11,8 +11,8 @@
 - PATCH /profile/password     ->H?W  Forget Password API 
 
 # connectionRequestRouter
-- POST /request/send/interestd/:userId
-- POST /request/send/ignored/:userId
+- POST /request/send/:status/:userId  -- status - interested and ignore
+// - POST /request/send/ignored/:userId
 
 - POST /request/review/accepted/:requestId
 - POST /request/review/rejected/:requestId
