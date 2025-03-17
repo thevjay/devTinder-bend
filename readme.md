@@ -16,8 +16,7 @@
 - Error Handlng and wild card error handling
 
 
-
-
+- 
 - Create a free cluster
 - Install mongoose library
 - connect Your application o the database URL\
@@ -27,3 +26,6 @@
 
 - bcrypt 
 - Vijayyy@323 , salt is random things rounds
+
+- Read about ref and populate https
+- Create GET /
