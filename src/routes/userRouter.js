@@ -1,7 +1,8 @@
 const express = require('express')
 const userRouter = express.Router();
 const {userAuth} = require('../middlewares/auth')
-const ConnectionRequest = require('../models/connectionReq')
+const ConnectionRequest = require('../models/connectionReq');
+const User = require('../models/user');
 
 
 const USER_SAFE_DATA = "firstName lastName photoUrl age gender about skills";
@@ -64,5 +65,62 @@ userRouter.get('/user/connections',userAuth,async(req,res)=>{
     }
 })
 
+
+userRouter.get("/feed", userAuth, async(req,res)=>{
+    try{
+
+        // User Should see all the user cards except
+        // 0. his own card
+        // 1. his connections
+        // 2. ignored people
+        // 3. already sent the connection request
+
+        // Example: Rahul = [mark, Donald, MSD, virat]
+        // R -> Akshay -> rejected R -> Elon -> Accepted
+        // Elon -> Rahul
+        // Akshay -> [] not show the Rahul is rejected state
+        
+        const loggedInUser = req.user;
+
+        const page = parseInt(req.query.page) || 1;
+        let limit = parseInt(req.query.limit) || 10;
+        limit = limit > 50 ? 50 : limit;
+        
+        const skip = (page-1) * limit;
+
+        // Find all connection requests (sent + received)
+        const connectionRequests = await ConnectionRequest.find({
+            $or:[
+                { fromUserId: loggedInUser._id},
+                { toUserId: loggedInUser._id},
+            ]
+        })
+        .select("fromUserId toUserId")
+
+        // .populate("fromUserId","firstName")
+        // .populate("toUserId","firstName")
+
+        const hideUserFromFeed = new Set();
+        connectionRequests.forEach((req)=>{
+            hideUserFromFeed.add(req.fromUserId.toString());
+            hideUserFromFeed.add(req.toUserId.toString());
+        })
+
+        const users = await User.find({
+            $and: [
+                { _id:{ $nin: Array.from(hideUserFromFeed) }},
+                { _id:{ $ne:loggedInUser._id } },
+            ]
+        }).select(USER_SAFE_DATA)
+        .skip(skip)                     // Apply pagination here
+        .limit(limit);
+
+
+        res.send(users)
+    }
+    catch(error){
+        res.status(500).send("ERROR: "+error.message);
+    }
+})
 
 module.exports = userRouter;
