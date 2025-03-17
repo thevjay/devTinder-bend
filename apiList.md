@@ -14,8 +14,8 @@
 - POST /request/send/:status/:userId  -- status - interested and ignore
 // - POST /request/send/ignored/:userId
 
-- POST /request/review/accepted/:requestId
-- POST /request/review/rejected/:requestId
+- POST /request/review/:status/:requestId  --> accepted or rejected
+// - POST /request/review/rejected/:requestId
 
 # userRouter
 - GET /user/connections
@@ -26,3 +26,5 @@
 
 Status: ignore, interested, accepted, rejected
 
+# WE DONT TRUST THE REQ.BODY (means attackers milciouse data will send)
+# ALWAYS THINK ABOUT CORNER CASES

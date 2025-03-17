@@ -25,8 +25,6 @@ requestRouter.post("/request/send/:status/:toUserId",userAuth,async(req,res)=>{
     //     })
     // }
 
-
-
     const toUser = await User.findById(toUserId);
     if(!toUser){
         return res.status(404).json({
@@ -60,6 +58,54 @@ requestRouter.post("/request/send/:status/:toUserId",userAuth,async(req,res)=>{
     })
         
     }catch(error){
+        // Send a meaningful error response
+        res.status(400).json({ error: error.message || "Something went wrong!" });
+    }
+})
+
+
+requestRouter.post("/request/review/:status/:requestId",userAuth,async(req,res)=>{
+    try{
+        const loggedInUser = req.user;
+        const { status , requestId } = req.params; 
+
+        const allowed_status = ["accepted","rejected"];
+        if(!allowed_status.includes(status)){
+            return res.status(400).json({
+                message:"Status not allowed! "
+            })
+        }
+
+        const connectionRequest = await ConnectionRequest.findOne({
+            _id:requestId,
+            toUserId:loggedInUser._id,
+            status:"interested",
+        });
+
+        if(!connectionRequest){
+            return res.status(404).json({
+                message:"Connection request not found"
+            })
+        }
+
+        connectionRequest.status = status;
+
+        const data = await connectionRequest.save();
+
+        res.json({
+            message:"Connection request "+status,
+            data
+        })
+
+        // Validate the status
+
+        // msd => mark
+        // loggedInId = toUserId
+        // status = interested
+        // request Id should be valid
+
+    }
+    catch(error){
         // Send a meaningful error response
         res.status(400).json({ error: error.message || "Something went wrong!" });
     }
