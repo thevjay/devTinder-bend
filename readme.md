@@ -29,3 +29,15 @@
 
 - Read about ref and populate https
 - Create GET /
+
+# socket.io Backend Part
+- # Step1 :
+- - npm i socket.io
+
+
+# HW
+- Homework: Fix bug - If i'm not friend, then I should not be able to send message
+- Homework: feat: Show Green Symbol when Online??? - (last Seen 2 hours ago)
+- HomeWork: feat: Limit messages when fetching from DB
+- Project Ideas:- Tic tac too game
+- Project Idea 2:-  Chess

@@ -31,9 +31,11 @@ authRouter.post("/signup",async(req,res)=>{
             password:passwordHash,
         });
 
-        await user.save();
+       const savedUser = await user.save();
+       const token = await savedUser.getJWT();
+       res.cookie("token", token,{expires: new Date(Date.now()+8*3600000)},{ httpOnly:true });
 
-        res.status(201).json({ message: "User Added Successfully!" });
+       res.status(201).send(savedUser);
     }
     catch(error){
         // Send a meaningful error response
@@ -59,7 +61,7 @@ authRouter.post("/login",async(req,res)=>{
 
             // Create a JWT Token
             // const token = await jwt.sign({ _id:user._id },"fsd",{expiresIn:"1d"})
-              const token = await user.getJWT();
+            const token = await user.getJWT();
             // Add the token to cookie and send the response Back to the user
 
             res.cookie("token", token,{expires: new Date(Date.now()+8*3600000)},{ httpOnly:true });
